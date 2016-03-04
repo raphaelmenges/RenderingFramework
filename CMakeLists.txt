@@ -47,8 +47,11 @@ file(GLOB GL3W ${EXTERNALS_PATH}/gl3w/src/*.c)
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 
-# Collect globally available code
-set(GLOBAL_CODE ${GL3W})
+### COLLECT UTILITIES ###
+file(GLOB_RECURSE UTIL ${CMAKE_SOURCE_DIR}/src/util/*.cpp)
+
+### GLOBAL CODE ###
+set(GLOBAL_CODE ${UTIL} ${GL3W})
 
 ### COLLECT PROJECTS ###
 message(Collect Projects:)
