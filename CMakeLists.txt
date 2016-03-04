@@ -1,3 +1,4 @@
+### SETUP ###
 cmake_minimum_required(VERSION 2.8)
 project(RenderingFramework)
 
@@ -19,6 +20,9 @@ include(${CMAKE_MODULE_PATH}/macros.cmake)
 # Include project folder as include
 include_directories(${CMAKE_SOURCE_DIR})
 
+### COLLECT DEPENDENCIES ###
+message(Collect Dependencies:)
+
 # GLFW
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "GLFW build examples")
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "GLFW build tests")
@@ -26,18 +30,24 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "GLFW build docs")
 set(GLFW_INSTALL OFF CACHE BOOL "GLFW install")
 add_subdirectory(${EXTERNALS_PATH}/glfw)
 
-# gl3w
-include_directories(${EXTERNALS_PATH}/gl3w/include)
-set(GLOBAL_CODE ${GLOBAL} ${EXTERNALS_PATH}/gl3w/src)
-
-# GLM
+# GLM (do not add as subdirectory)
 include_directories(${EXTERNALS_PATH}/glm)
 
 # STB TODO
 
-# OpenGL TODO
+# gl3w
+include_directories(${EXTERNALS_PATH}/gl3w/include)
+file(GLOB GL3W ${EXTERNALS_PATH}/gl3w/src/*.c)
+
+# OpenGL (should be found by CMake)
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
+
+# Collect globally available code
+set(GLOBAL_CODE ${GL3W})
+
+### COLLECT PROJECTS ###
+message(Collect Projects:)
 
 # Projects
 SUBDIRLIST(SUBDIRS ${CMAKE_SOURCE_DIR}/src/exe)
