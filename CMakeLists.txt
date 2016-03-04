@@ -9,6 +9,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 # Pathes
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake CACHE PATH "Project specific path. Set manually if it was not found.")
 set(EXTERNALS_PATH ${CMAKE_SOURCE_DIR}/externals CACHE PATH "Project specific path. Set manually if it was not found.")
+set(RESOURCES_PATH ${CMAKE_SOURCE_DIR}/resources CACHE PATH "Project specific path. Set manually if it was not found.")
+
+# Defines for C++ side
+add_definitions(-DRESOURCES_PATH="${RESOURCES_PATH}")
 
 # Outputs
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
