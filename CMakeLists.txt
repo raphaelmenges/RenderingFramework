@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
+project(RenderingFramework)
 
 # Configuration
 set(CMAKE_CONFIGURATION_TYPES Debug;Release)
@@ -19,6 +20,10 @@ include(${CMAKE_MODULE_PATH}/macros.cmake)
 include_directories(${CMAKE_SOURCE_DIR})
 
 # GLFW
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "GLFW build examples")
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "GLFW build tests")
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "GLFW build docs")
+set(GLFW_INSTALL OFF CACHE BOOL "GLFW install")
 add_subdirectory(${EXTERNALS_PATH}/glfw)
 
 # gl3w
