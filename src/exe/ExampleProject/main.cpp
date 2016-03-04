@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "src/util/Shader.h"
+
 #include "externals/gl3w/include/GL/gl3w.h"
 #include "externals/glfw/include/GLFW/glfw3.h"
 #include "externals/glm/glm/glm.hpp"
