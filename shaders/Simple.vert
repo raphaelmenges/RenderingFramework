@@ -3,8 +3,10 @@
 in vec3 position;
 out vec3 pos;
 
+uniform mat4 viewMatrix;
+
 void main()
 {
 	pos = position;
-    gl_Position = vec4(position, 1.0);
+    gl_Position = viewMatrix * vec4(position, 1.0);
 }

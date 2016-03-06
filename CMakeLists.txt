@@ -29,10 +29,10 @@ include(${CMAKE_MODULE_PATH}/macros.cmake)
 include_directories(${CMAKE_SOURCE_DIR})
 
 ### COLLECT DEPENDENCIES ###
-message(Collect Dependencies:)
+message(STATUS ***Collect_Dependencies***)
 
 # GLFW
-message(GLFW)
+message(STATUS GLFW)
 set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "GLFW build examples." )
 set(GLFW_BUILD_TESTS OFF CACHE INTERNAL "GLFW build tests.")
 set(GLFW_BUILD_DOCS OFF CACHE INTERNAL "GLFW build docs.")
@@ -46,19 +46,22 @@ set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "GLFW build shared libs.")
 add_subdirectory(${EXTERNALS_PATH}/glfw)
 
 # GLM (do not add as subdirectory)
-message(GLM)
+message(STATUS GLM)
 include_directories(${EXTERNALS_PATH}/glm)
 
 # STB TODO
-message(stb)
+message(STATUS stb)
+
+# ASSIMP TODO
+message(STATUS assimp)
 
 # gl3w
-message(gl3w)
+message(STATUS gl3w)
 include_directories(${EXTERNALS_PATH}/gl3w/include)
 file(GLOB GL3W ${EXTERNALS_PATH}/gl3w/src/*.c)
 
 # OpenGL (should be found by CMake)
-message(OpenGL)
+message(STATUS OpenGL)
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 
@@ -73,11 +76,11 @@ set(GLOBAL_CODE ${UTIL} ${GL3W})
 add_subdirectory(${SHADERS_PATH})
 
 ### COLLECT PROJECTS ###
-message(Collect Projects:)
+message(STATUS ***Collect_Projects***)
 
 # Projects
 SUBDIRLIST(SUBDIRS ${CMAKE_SOURCE_DIR}/src/exe)
 foreach(SUBDIR ${SUBDIRS})
-    message(${SUBDIR})
+    message(STATUS ${SUBDIR})
     add_subdirectory(${CMAKE_SOURCE_DIR}/src/exe/${SUBDIR})
 endforeach()

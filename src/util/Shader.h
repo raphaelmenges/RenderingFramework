@@ -2,6 +2,7 @@
 #define SHADER_H_
 
 #include "externals/gl3w/include/GL/gl3w.h"
+#include "externals/glm/glm/glm.hpp"
 
 #include <string>
 #include <vector>
@@ -31,7 +32,8 @@ public:
 	GLuint getProgram() const;
 
     // Update uniform
-    void updateUniform(std::string name, float value) const; 
+    void updateUniform(std::string name, const float& rValue) const;
+	void updateUniform(std::string name, const glm::mat4& rValue) const;
 
 protected:
 

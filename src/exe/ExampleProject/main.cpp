@@ -1,7 +1,9 @@
+// Testing
 #include <iostream>
 
 #include "src/util/Shader.h"
 #include "src/util/Primitives.h"
+#include "src/util/OrbitCamera.h"
 
 #include "externals/gl3w/include/GL/gl3w.h"
 #include "externals/glfw/include/GLFW/glfw3.h"
@@ -27,10 +29,15 @@ int main()
 	glm::vec4 clearColor(1, 1, 0, 1);
 	glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 
+	// Perpare camera
+	OrbitCamera camera(glm::vec3(0,0,0), 15.f, 30.f, -2.f, 0.1f, 10.f);
+	camera.update();
+
 	// Prepare shader
 	Shader shader("Simple.vert", "Simple.frag");
 	shader.compile();
 	shader.bind();
+	shader.updateUniform("viewMatrix", camera.getViewMatrix());
 
 	// Prepare mesh
 	GLuint VBO = 0; // handle of VBO

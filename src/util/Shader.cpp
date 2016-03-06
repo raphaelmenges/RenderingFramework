@@ -1,5 +1,7 @@
 #include "Shader.h"
 
+#include "externals/glm/glm/gtc/type_ptr.hpp"
+
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -107,10 +109,16 @@ GLuint Shader::getProgram() const
 	return mProgram;
 }
 
-void Shader::updateUniform(std::string name, float value) const
+void Shader::updateUniform(std::string name, const float& rValue) const
 {
 	GLuint location = glGetUniformLocation(mProgram, name.c_str());
-	glUniform1f(location, value);
+	glUniform1f(location, rValue);
+}
+
+void Shader::updateUniform(std::string name, const glm::mat4& rValue) const
+{
+	GLuint location = glGetUniformLocation(mProgram, name.c_str());
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(rValue));
 }
 
 std::string Shader::readShaderFile(std::string filepath, const std::vector<std::string>& rDefines) const
