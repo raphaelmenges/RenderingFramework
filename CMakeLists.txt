@@ -4,16 +4,19 @@ set(CMAKE_CONFIGURATION_TYPES Debug Release)
 project(RenderingFramework)
 
 # Configuration
-set(CMAKE_CONFIGURATION_TYPES Debug;Release)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+if(NOT MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+endif(NOT MSVC)
 
 # Pathes
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake CACHE INTERNAL "Project specific path. Set manually if it was not found.")
 set(EXTERNALS_PATH ${CMAKE_SOURCE_DIR}/externals CACHE PATH "Project specific path. Set manually if it was not found.")
 set(RESOURCES_PATH ${CMAKE_SOURCE_DIR}/resources CACHE PATH "Project specific path. Set manually if it was not found.")
+set(SHADERS_PATH ${CMAKE_SOURCE_DIR}/shaders CACHE PATH "Project specific path. Set manually if it was not found.")
 
 # Defines for C++ side
 add_definitions(-DRESOURCES_PATH="${RESOURCES_PATH}")
+add_definitions(-DSHADERS_PATH="${SHADERS_PATH}")
 
 # Outputs
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/exe CACHE PATH "Output path for executables.")
@@ -65,6 +68,9 @@ file(GLOB_RECURSE UTIL ${UTIL_PATH}/*.h ${UTIL_PATH}/*.cpp)
 
 ### GLOBAL CODE ###
 set(GLOBAL_CODE ${UTIL} ${GL3W})
+
+# Add shaders as subdirectory to display them in IDE
+add_subdirectory(${SHADERS_PATH})
 
 ### COLLECT PROJECTS ###
 message(Collect Projects:)
