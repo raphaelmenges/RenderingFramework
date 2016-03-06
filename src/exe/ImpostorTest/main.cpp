@@ -2,12 +2,14 @@
 #include <iostream>
 
 #include "src/util/Shader.h"
-#include "src/util/Primitives.h"
 #include "src/util/OrbitCamera.h"
 
 #include "externals/gl3w/include/GL/gl3w.h"
 #include "externals/glfw/include/GLFW/glfw3.h"
 #include "externals/glm/glm/glm.hpp"
+
+// Constants
+const GLuint count = 1; // count is count * count * count in the end....
 
 // Global variables
 OrbitCamera camera(glm::vec3(0, 0, 0), 15.f, 30.f, 2.0f, 0.1f, 10.f);
@@ -53,7 +55,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	GLuint width = 1280;
 	GLuint height = 720;
-    GLFWwindow* pWindow = glfwCreateWindow(width, height, "ExampleProject", NULL, NULL);
+    GLFWwindow* pWindow = glfwCreateWindow(width, height, "ImpostorTest", NULL, NULL);
     glfwMakeContextCurrent(pWindow);
     gl3wInit();
 
@@ -79,27 +81,13 @@ int main()
 	glm::mat4 projection = glm::perspective(glm::radians(45.f), (GLfloat)width / (GLfloat)height, 0.01f, 10.f);
 
 	// Prepare shader
-	Shader shader("Simple.vert", "Simple.geom", "Simple.frag");
+	Shader shader("ImpostorTest/Impostor.vert", "ImpostorTest/Impostor.frag");
 	shader.compile();
 	shader.bind();
 	shader.updateUniform("projMatrix", projection);
 
-	// Prepare mesh
-	GLuint VBO = 0; // handle of VBO
-	glGenBuffers(1, &VBO); // generate VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); // set as current VBO
-	glBufferData(GL_ARRAY_BUFFER, primitives::cube.size() * sizeof(GLfloat), primitives::cube.data(), GL_STATIC_DRAW); // copy data to GPU
-
-	// Prepare vertex array object
-	GLuint VAO = 0; // handle of VAO
-	glGenVertexArrays(1, &VAO); // generate VAO
-	glBindVertexArray(VAO); // set as current VAO
-
-	// Add vertices to VAO
-	GLuint vertexAttrib = glGetAttribLocation(shader.getProgram(), "position");
-	glEnableVertexAttribArray(vertexAttrib);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(vertexAttrib, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	// No VAO necessary
+	glBindVertexArray(0);
 	
     // Main loop
     while (!glfwWindowShouldClose(pWindow))
@@ -129,17 +117,14 @@ int main()
 		// Update shader (should be bound)
 		shader.updateUniform("viewMatrix", camera.getViewMatrix());
 
-		// Draw cube
-		glDrawArrays(GL_TRIANGLES, 0, (GLsizei)primitives::cube.size());
+		// Draw impostor
+		glPointSize(5.f);
+		glDrawArrays(GL_POINTS, 0, count);
 
         // Swap front and back buffers and poll events
         glfwSwapBuffers(pWindow);
         glfwPollEvents();
     }
-
-	// Delete VBO and VAO
-	glDeleteBuffers(1, &VBO);
-	glDeleteVertexArrays(1, &VAO);
 
     // Termination of program
     glfwTerminate();
