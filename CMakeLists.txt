@@ -16,7 +16,6 @@ set(RESOURCES_PATH ${CMAKE_SOURCE_DIR}/resources CACHE PATH "Project specific pa
 add_definitions(-DRESOURCES_PATH="${RESOURCES_PATH}")
 
 # Outputs
-
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/exe CACHE PATH "Output path for executables.")
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib CACHE PATH "Output path for libraries.")
 
@@ -61,7 +60,8 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 
 ### COLLECT UTILITIES ###
-file(GLOB_RECURSE UTIL ${CMAKE_SOURCE_DIR}/src/util/*.cpp)
+set(UTIL_PATH ${CMAKE_SOURCE_DIR}/src/util)
+file(GLOB_RECURSE UTIL ${UTIL_PATH}/*.h ${UTIL_PATH}/*.cpp)
 
 ### GLOBAL CODE ###
 set(GLOBAL_CODE ${UTIL} ${GL3W})
