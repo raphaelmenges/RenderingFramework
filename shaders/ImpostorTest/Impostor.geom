@@ -15,7 +15,7 @@ void main()
     gl_Position = M * (gl_in[0].gl_Position + vec4(-delta, -delta, 0, 0));
     EmitVertex();
 
-    gl_Position = M * (gl_in[0].gl_Position + vec4(+delta, -delta, 0, 0));
+    gl_Position = M * (gl_in[0].gl_Position + vec4(delta, -delta, 0, 0));
     EmitVertex();
 
 	gl_Position = M * (gl_in[0].gl_Position + vec4(0, delta, 0, 0));
