@@ -38,7 +38,6 @@ void Shader::compile()
 	std::vector<char> vertexBuffer(vertexData.size() + 1);
 	copy(vertexData.begin(), vertexData.end(), vertexBuffer.begin());
 	const char* vertexShaderSource = &vertexBuffer[0];
-
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
@@ -64,13 +63,12 @@ void Shader::compile()
 	std::vector<char> fragmentBuffer(fragmentData.size() + 1);
 	copy(fragmentData.begin(), fragmentData.end(), fragmentBuffer.begin());
 	const char* fragmentShaderSource = &fragmentBuffer[0];
-
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 	logShaderInfo(fragmentShader);
 
-	// Delete old program
+	// Delete old program if there exists one
 	if (mProgramLinked)
 	{
 		glDeleteProgram(mProgram);
@@ -80,6 +78,10 @@ void Shader::compile()
 	// Create program
 	mProgram = glCreateProgram();
 	glAttachShader(mProgram, vertexShader);
+	if (!mGeometryShaderFilepath.empty())
+	{
+		glAttachShader(mProgram, geometryShader);
+	}
 	glAttachShader(mProgram, fragmentShader);
 	glLinkProgram(mProgram);
 
@@ -114,10 +116,16 @@ void Shader::updateUniform(std::string name, float value) const
 std::string Shader::readShaderFile(std::string filepath, const std::vector<std::string>& rDefines) const
 {
 	// Create full path
-	std::string fullpath = std::string(SHADERS_PATH) + filepath;
+	std::string fullpath = std::string(SHADERS_PATH) + "/" + filepath;
 
 	// Open file
 	std::ifstream is(fullpath.c_str(), std::ifstream::in);
+
+	// Check file
+	if (!is)
+	{
+		// TODO: log error
+	}
 
 	// Read data from file
 	std::string data((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
