@@ -1,1 +1,4 @@
 TODO
+
+## License
+MIT License
