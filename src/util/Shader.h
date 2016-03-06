@@ -17,7 +17,8 @@ public:
 	// TODO: uniform buffer
 
     // Constructor (pathes relative to SHADER_PATH)
-    Shader(std::string vsFilepath, std::string fsFilepath, std::string gsFilepath = "");
+    Shader(std::string vsFilepath, std::string fsFilepath);
+	Shader(std::string vsFilepath, std::string gsFilepath, std::string fsFilepath);
 
     // Destructor
     virtual ~Shader();

@@ -82,7 +82,7 @@ int main()
 	glm::mat4 projection = glm::perspective(glm::radians(45.f), (GLfloat)width / (GLfloat)height, 0.01f, 10.f);
 
 	// Prepare shader
-	Shader shader("Simple.vert", "Simple.frag");
+	Shader shader("Simple.vert", "Simple.geom", "Simple.frag");
 	shader.compile();
 	shader.bind();
 	shader.updateUniform("projMatrix", projection);

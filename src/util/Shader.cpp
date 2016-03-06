@@ -11,7 +11,12 @@
 
 const std::string DEFINES_PHRASE = "#defines";
 
-Shader::Shader(std::string vsFilepath, std::string fsFilepath, std::string gsFilepath)
+Shader::Shader(std::string vsFilepath, std::string fsFilepath) : Shader(vsFilepath, "", fsFilepath)
+{
+	// Piped to other constructor
+}
+
+Shader::Shader(std::string vsFilepath, std::string gsFilepath, std::string fsFilepath)
 {
 	mVertexShaderFilepath = vsFilepath;
 	mGeometryShaderFilepath = gsFilepath;
