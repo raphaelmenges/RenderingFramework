@@ -81,7 +81,7 @@ int main()
 	glm::mat4 projection = glm::perspective(glm::radians(45.f), (GLfloat)width / (GLfloat)height, 0.01f, 10.f);
 
 	// Prepare shader
-	Shader shader("ImpostorTest/Impostor.vert", "ImpostorTest/Impostor.frag");
+	Shader shader("ImpostorTest/Impostor.vert", "ImpostorTest/Impostor.geom", "ImpostorTest/Impostor.frag");
 	shader.compile();
 	shader.bind();
 	shader.updateUniform("projMatrix", projection);
@@ -118,7 +118,6 @@ int main()
 		shader.updateUniform("viewMatrix", camera.getViewMatrix());
 
 		// Draw impostor
-		glPointSize(5.f);
 		glDrawArrays(GL_POINTS, 0, count);
 
         // Swap front and back buffers and poll events
