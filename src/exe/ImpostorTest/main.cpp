@@ -2,17 +2,15 @@
 #include <iostream>
 
 #include "src/util/Shader.h"
+#include "src/util/Primitives.h"
 #include "src/util/OrbitCamera.h"
 
 #include "externals/gl3w/include/GL/gl3w.h"
 #include "externals/glfw/include/GLFW/glfw3.h"
 #include "externals/glm/glm/glm.hpp"
 
-// Constants
-const GLuint count = 1; // count is count * count * count in the end....
-
 // Global variables
-OrbitCamera camera(glm::vec3(0, 0, 0), 15.f, 30.f, 2.0f, 0.1f, 10.f);
+OrbitCamera camera(glm::vec3(0, 0, 0), 90.f, 90.f, 2.0f, 0.1f, 10.f);
 GLboolean buttonPressed = GL_FALSE;
 GLfloat cursorX, cursorY, prevCursorX, prevCursorY = 0;
 
@@ -67,7 +65,7 @@ int main()
 	// Prepare OpenGL
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-	// glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 
     // Prepare delta time calculation
     float lastTime, deltaTime;
@@ -86,9 +84,11 @@ int main()
 	shader.bind();
 	shader.updateUniform("projMatrix", projection);
 
-	// No VAO necessary
-	glBindVertexArray(0);
-	
+	// Prepare vertex array object (even if empty, it seams necessary)
+	GLuint VAO = 0; // handle of VAO
+	glGenVertexArrays(1, &VAO); // generate VAO
+	glBindVertexArray(VAO); // set as current VAO
+
     // Main loop
     while (!glfwWindowShouldClose(pWindow))
     {
@@ -117,13 +117,16 @@ int main()
 		// Update shader (should be bound)
 		shader.updateUniform("viewMatrix", camera.getViewMatrix());
 
-		// Draw impostor
-		glDrawArrays(GL_POINTS, 0, count);
+		// Draw cube
+		glDrawArrays(GL_POINTS, 0, 1);
 
         // Swap front and back buffers and poll events
         glfwSwapBuffers(pWindow);
         glfwPollEvents();
     }
+
+	// Delete VAO
+	glDeleteVertexArrays(1, &VAO);
 
     // Termination of program
     glfwTerminate();
