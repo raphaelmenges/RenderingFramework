@@ -20,6 +20,7 @@ int main()
 	// Prepare OpenGL
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+	glEnable(GL_CULL_FACE);
 
     // Prepare delta time calculation
     float lastTime, deltaTime;
@@ -30,7 +31,7 @@ int main()
 	glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 
 	// Perpare camera
-	OrbitCamera camera(glm::vec3(0,0,0), 15.f, 30.f, -2.f, 0.1f, 10.f);
+	OrbitCamera camera(glm::vec3(0,0,0), 15.f, 30.f, 0.5f, 0.1f, 10.f);
 	camera.update();
 
 	// Prepare shader
