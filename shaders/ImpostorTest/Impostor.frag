@@ -13,48 +13,51 @@ const vec4 lightDirection = vec4(-0.5, -0.75, -0.3, 0);
 
 void main()
 {
-	// Radius in UV space is 1
+    // Radius in UV space is 1
 
-	// Distance from center of sphere
-	float distance = length(uv);
-	if(distance > 1.0)
-	{
-		discard;
-	}
+    // Distance from center of sphere
+    float distance = length(uv);
+    if(distance > 1.0)
+    {
+            discard;
+    }
 
-	// Calculate normal of sphere
-	float z = sqrt(1.0 - dot(uv,uv)); // 1.0 -((uv.x*uv.x) + (uv.y*uv.y)));
-	vec3 normal = normalize(vec3(uv, z));
+    // Calculate normal of sphere
+    float z = sqrt(1.0 - dot(uv,uv)); // 1.0 -((uv.x*uv.x) + (uv.y*uv.y)));
+    vec3 normal = normalize(vec3(uv, z));
 
-	// World space position on sphere
-	vec3 cameraRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]); // First row of view matrix
-	vec3 cameraUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]); // Second row of view matrix
-	vec3 cameraDepth = vec3(viewMatrix[0][2], viewMatrix[1][2], viewMatrix[2][2]); // Third row of view matrix
-	vec3 relativeViewPos = normal * radius;
-	vec3 relativeWorldPos = vec3(relativeViewPos.x * cameraRight + relativeViewPos.y * cameraUp + relativeViewPos.z * cameraDepth);
-	vec3 worldNormal = normalize(relativeWorldPos);
-	vec3 worldPos = position + relativeWorldPos;
+    // World space position on sphere
+    vec3 cameraRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]); // First row of view matrix
+    vec3 cameraUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]); // Second row of view matrix
+    vec3 cameraDepth = vec3(viewMatrix[0][2], viewMatrix[1][2], viewMatrix[2][2]); // Third row of view matrix
+    vec3 relativeViewPos = normal * radius;
+    vec3 relativeWorldPos = vec3(relativeViewPos.x * cameraRight + relativeViewPos.y * cameraUp + relativeViewPos.z * cameraDepth);
+    vec3 worldNormal = normalize(relativeWorldPos);
+    vec3 worldPos = position + relativeWorldPos;
 
-	// Set depth of pixel by projecting pixel position into clip space
-	vec4 projPos = projMatrix * viewMatrix * vec4(worldPos, 1.0);
-	float projDepth = projPos.z / projPos.w;
-	gl_FragDepth = (projDepth + 1.0) * 0.5; // gl_FragCoord.z is from 0..1. So go from clip space to viewport space
+    // Set depth of pixel by projecting pixel position into clip space
+    vec4 projPos = projMatrix * viewMatrix * vec4(worldPos, 1.0);
+    float projDepth = projPos.z / projPos.w;
+    gl_FragDepth = (projDepth + 1.0) * 0.5; // gl_FragCoord.z is from 0..1. So go from clip space to viewport space
 
-	// Diffuse lighting (hacked together, not correct)
-	vec4 nrmLightDirection = normalize(lightDirection);
-	float lighting = max(0,dot(normal, vec3(viewMatrix * -nrmLightDirection))); // Do it in view space (therefore is normal here ok)
+    // Diffuse lighting (hacked together, not correct)
+    vec4 nrmLightDirection = normalize(lightDirection);
+    float lighting = max(0,dot(normal, vec3(viewMatrix * -nrmLightDirection))); // Do it in view space (therefore is normal here ok)
 
-	// Specular lighting
-	vec3 cameraPos = vec3(viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2]); // First row of view matrix
-	vec3 reflectionVector = reflect(-nrmLightDirection.xyz, worldNormal);
-	vec3 surfaceToCamera = normalize(cameraPos - worldPos);
-	float cosAngle = max(0.0, dot(surfaceToCamera, reflectionVector));
-	float specular = pow(cosAngle, 10);
-	lighting += lighting * 0.5 * specular;
+    // Specular lighting
+    vec3 cameraPos = vec3(viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2]); // Last row of view matrix
+    vec3 reflectionVector = reflect(-nrmLightDirection.xyz, worldNormal);
+    vec3 surfaceToCamera = normalize(cameraPos - worldPos);
+    float cosAngle = max(0.0, dot(surfaceToCamera, reflectionVector));
+    float specular = pow(cosAngle, 10);
+    //lighting += lighting * 0.5 * specular;
 
-	// Some "ambient" lighting
-	lighting = 0.25 + 0.75 * lighting;
 
-	// Output color
+    lighting += 0.5 * pow(max(0.0, dot(reflect(-nrmLightDirection.xyz, worldNormal), surfaceToCamera)), 12);
+
+    // Some "ambient" lighting
+    lighting = 0.25 + 0.75 * lighting;
+
+    // Output color
     outColor = vec4(lighting, lighting, lighting, 1);
 }
