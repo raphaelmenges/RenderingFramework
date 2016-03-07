@@ -16,8 +16,8 @@ vec3 linearTo3D(int id)
 
 void main()
 {
-	vec3 position = linearTo3D(gl_VertexID);
-	position -= resolution / 2;
-	position *= size;
-	gl_Position = vec4(position, 1);
+    vec3 position = linearTo3D(gl_VertexID);
+    position -= resolution / 2;
+    position *= size;
+    gl_Position = vec4(position, 1);
 }

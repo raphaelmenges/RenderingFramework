@@ -8,6 +8,7 @@ layout (depth_less) out float gl_FragDepth; // Makes optimizations possible
 
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
+uniform vec3 cameraWorldPos;
 
 const vec4 lightDirection = vec4(-0.5, -0.75, -0.3, 0);
 
@@ -44,20 +45,16 @@ void main()
     vec4 nrmLightDirection = normalize(lightDirection);
     float lighting = max(0,dot(normal, vec3(viewMatrix * -nrmLightDirection))); // Do it in view space (therefore is normal here ok)
 
-    // Specular lighting
-    vec3 cameraPos = vec3(viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2]); // Last row of view matrix
-    vec3 reflectionVector = reflect(-nrmLightDirection.xyz, worldNormal);
-    vec3 surfaceToCamera = normalize(cameraPos - worldPos);
+    // Specular lighting (camera pos in view matrix last column is in view coordinates?)
+    vec3 reflectionVector = reflect(nrmLightDirection.xyz, worldNormal);
+    vec3 surfaceToCamera = normalize(cameraWorldPos - worldPos);
     float cosAngle = max(0.0, dot(surfaceToCamera, reflectionVector));
-    float specular = pow(cosAngle, 10);
-    //lighting += lighting * 0.5 * specular;
-
-
-    lighting += 0.5 * pow(max(0.0, dot(reflect(-nrmLightDirection.xyz, worldNormal), surfaceToCamera)), 12);
+    float specular = pow(cosAngle, 25);
+    lighting += lighting * 0.75 * specular;
 
     // Some "ambient" lighting
-    lighting = 0.25 + 0.75 * lighting;
+    vec3 color = mix(vec3(0.1, 0.2, 0.3), vec3(0.8, 0.8, 0.8), lighting);
 
     // Output color
-    outColor = vec4(lighting, lighting, lighting, 1);
+    outColor = vec4(color, 1);
 }
