@@ -9,8 +9,11 @@
 #include "externals/glfw/include/GLFW/glfw3.h"
 #include "externals/glm/glm/glm.hpp"
 
+// Definitions
+const int resolution = 10;
+
 // Global variables
-OrbitCamera camera(glm::vec3(0, 0, 0), 90.f, 90.f, 2.0f, 0.1f, 10.f);
+OrbitCamera camera(glm::vec3(0, 0, 0), 90.f, 90.f, 5.0f, 1.0f, 20.0f);
 GLboolean buttonPressed = GL_FALSE;
 GLfloat cursorX, cursorY, prevCursorX, prevCursorY = 0;
 
@@ -76,12 +79,13 @@ int main()
 	glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 
 	// Prepare projection
-	glm::mat4 projection = glm::perspective(glm::radians(45.f), (GLfloat)width / (GLfloat)height, 0.01f, 10.f);
+	glm::mat4 projection = glm::perspective(glm::radians(45.f), (GLfloat)width / (GLfloat)height, 0.01f, 100.f);
 
 	// Prepare shader
 	Shader shader("ImpostorTest/Impostor.vert", "ImpostorTest/Impostor.geom", "ImpostorTest/Impostor.frag");
 	shader.compile();
 	shader.bind();
+	shader.updateUniform("resolution", resolution);
 	shader.updateUniform("projMatrix", projection);
 
 	// Prepare vertex array object (even if empty, it seams necessary)
@@ -118,7 +122,7 @@ int main()
 		shader.updateUniform("viewMatrix", camera.getViewMatrix());
 
 		// Draw cube
-		glDrawArrays(GL_POINTS, 0, 1);
+		glDrawArrays(GL_POINTS, 0, (GLsizei)glm::pow(resolution,3));
 
         // Swap front and back buffers and poll events
         glfwSwapBuffers(pWindow);

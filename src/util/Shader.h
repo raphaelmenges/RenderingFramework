@@ -34,6 +34,7 @@ public:
 
     // Update uniform
     void updateUniform(std::string name, const float& rValue) const;
+	void updateUniform(std::string name, const int& rValue) const;
 	void updateUniform(std::string name, const glm::mat4& rValue) const;
 
 protected:
