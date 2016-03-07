@@ -14,11 +14,10 @@ void main()
 		discard;
 	}
 
-	// Calculate normal of sphere (stupid human has mistake)
-	float x = uv.x;
-	float y = uv.y;
-	float z = cos(atan(uv.y, uv.x));
-	vec3 normal = normalize(vec3(x,y, z));
+	// Calculate normal of sphere
+	float product = dot(uv,uv); // (uv.x*uv.x) + (uv.y*uv.y)
+	vec3 normal = normalize(vec3(uv, sqrt(1.0 - product)));
 
+	// Output color
     outColor = vec4(normal, 1);
 }
