@@ -10,7 +10,7 @@
 #include "externals/glm/glm/glm.hpp"
 
 // Definitions
-const int resolution = 10;
+const int resolution = 12;
 
 // Global variables
 OrbitCamera camera(glm::vec3(0, 0, 0), 90.f, 90.f, 5.0f, 1.0f, 20.0f);

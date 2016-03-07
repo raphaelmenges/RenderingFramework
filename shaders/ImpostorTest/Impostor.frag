@@ -14,7 +14,7 @@ const vec4 lightDirection = vec4(-0.5, -0.75, -0.3, 0);
 
 void main()
 {
-    // Radius in UV space is 1
+    // Radius in UV space is 1 (therefore the scaling with 2 in geometry shader)
 
     // Distance from center of sphere
     float distance = length(uv);
