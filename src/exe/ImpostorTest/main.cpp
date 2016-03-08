@@ -20,7 +20,7 @@
 // #########################################
 
 // Definitions
-const int resolution = 12;
+const int RESOLUTION = 12;
 const std::string RENDER_SPHERE = "RENDER_SPHERE";
 const std::string TRIANGLE_IMPOSTOR = "TRIANGLE_IMPOSTOR";
 const std::string DISPLACE_BY_COLOR = "DISPLACE_BY_COLOR";
@@ -219,11 +219,11 @@ int main()
 
         // Those values are static but must be updated each frame because a
         // recompilation of the shader program leads to loss of uniform data (BUG)
-        shaderProgram.updateUniform("resolution", resolution);
+        shaderProgram.updateUniform("resolution", RESOLUTION);
         shaderProgram.updateUniform("projMatrix", projection);
 
         // Draw cube
-        glDrawArrays(GL_POINTS, 0, (GLsizei)glm::pow(resolution,3));
+        glDrawArrays(GL_POINTS, 0, (GLsizei)glm::pow(RESOLUTION,3));
 
         // ImGui
         bool opened = true;
