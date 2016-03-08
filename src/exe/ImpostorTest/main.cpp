@@ -1,7 +1,7 @@
 // Testing
 #include <iostream>
 
-#include "src/util/Shader.h"
+#include "src/util/ShaderProgram.h"
 #include "src/util/Primitives.h"
 #include "src/util/OrbitCamera.h"
 
@@ -82,7 +82,7 @@ int main()
     glm::mat4 projection = glm::perspective(glm::radians(45.f), (GLfloat)width / (GLfloat)height, 0.01f, 100.f);
 
     // Prepare shader
-    Shader shader("ImpostorTest/Impostor.vert", "ImpostorTest/Impostor.geom", "ImpostorTest/Impostor.frag");
+    ShaderProgram shader("ImpostorTest/Impostor.vert", "ImpostorTest/Impostor.geom", "ImpostorTest/Impostor.frag");
     shader.compile();
     shader.bind();
     shader.updateUniform("resolution", resolution);

@@ -1,22 +1,23 @@
-#include "Shader.h"
+#include "ShaderProgram.h"
 
 #include "externals/glm/glm/gtc/type_ptr.hpp"
 
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 // TODO: delete
 #include <iostream>
 
 const std::string DEFINES_PHRASE = "#defines";
 
-Shader::Shader(std::string vsFilepath, std::string fsFilepath) : Shader(vsFilepath, "", fsFilepath)
+ShaderProgram::ShaderProgram(std::string vsFilepath, std::string fsFilepath) : ShaderProgram(vsFilepath, "", fsFilepath)
 {
     // Piped to other constructor
 }
 
-Shader::Shader(std::string vsFilepath, std::string gsFilepath, std::string fsFilepath)
+ShaderProgram::ShaderProgram(std::string vsFilepath, std::string gsFilepath, std::string fsFilepath)
 {
     mVertexShaderFilepath = vsFilepath;
     mGeometryShaderFilepath = gsFilepath;
@@ -24,7 +25,7 @@ Shader::Shader(std::string vsFilepath, std::string gsFilepath, std::string fsFil
     mProgramLinked = false;
 }
 
-Shader::~Shader()
+ShaderProgram::~ShaderProgram()
 {
     if (mProgramLinked)
     {
@@ -33,12 +34,12 @@ Shader::~Shader()
     }
 }
 
-void Shader::compile()
+void ShaderProgram::compile()
 {
     // Create defines (TODO: should be filled somehow)
-    std::vector<std::string> vertexDefines;
-    std::vector<std::string> geometryDefines;
-    std::vector<std::string> fragmentDefines;
+    std::set<std::string> vertexDefines;
+    std::set<std::string> geometryDefines;
+    std::set<std::string> fragmentDefines;
 
     // Vertex shader
     std::string vertexData = readShaderFile(mVertexShaderFilepath, vertexDefines);
@@ -104,42 +105,42 @@ void Shader::compile()
     mProgramLinked = true;
 }
 
-void Shader::bind() const
+void ShaderProgram::bind() const
 {
     glUseProgram(mProgram);
 }
 
-GLuint Shader::getProgram() const
+GLuint ShaderProgram::getProgram() const
 {
     return mProgram;
 }
 
-void Shader::updateUniform(std::string name, const float& rValue) const
+void ShaderProgram::updateUniform(std::string name, const float& rValue) const
 {
     GLuint location = glGetUniformLocation(mProgram, name.c_str());
     glUniform1f(location, rValue);
 }
 
-void Shader::updateUniform(std::string name, const int& rValue) const
+void ShaderProgram::updateUniform(std::string name, const int& rValue) const
 {
     GLuint location = glGetUniformLocation(mProgram, name.c_str());
     glUniform1i(location, rValue);
 }
 
-void Shader::updateUniform(std::string name, const glm::vec3& rValue) const
+void ShaderProgram::updateUniform(std::string name, const glm::vec3& rValue) const
 {
     GLuint location = glGetUniformLocation(mProgram, name.c_str());
     glUniform3fv(location, 1, glm::value_ptr(rValue));
 }
 
 
-void Shader::updateUniform(std::string name, const glm::mat4& rValue) const
+void ShaderProgram::updateUniform(std::string name, const glm::mat4& rValue) const
 {
     GLuint location = glGetUniformLocation(mProgram, name.c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(rValue));
 }
 
-std::string Shader::readShaderFile(std::string filepath, const std::vector<std::string>& rDefines) const
+std::string ShaderProgram::readShaderFile(std::string filepath, const std::set<std::string>& rDefines) const
 {
     // Create full path
     std::string fullpath = std::string(SHADERS_PATH) + "/" + filepath;
@@ -188,7 +189,7 @@ std::string Shader::readShaderFile(std::string filepath, const std::vector<std::
     return dataWithDefines;
 }
 
-void Shader::logShaderInfo(GLuint shaderHandle) const
+void ShaderProgram::logShaderInfo(GLuint shaderHandle) const
 {
     // Get length of log
     GLint logLength = 0;

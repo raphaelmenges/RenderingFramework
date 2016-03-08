@@ -1,13 +1,13 @@
-#ifndef SHADER_H_
-#define SHADER_H_
+#ifndef SHADER_PROGRAM_H_
+#define SHADER_PROGRAM_H_
 
 #include "externals/gl3w/include/GL/gl3w.h"
 #include "externals/glm/glm/glm.hpp"
 
 #include <string>
-#include <vector>
+#include <set>
 
-class Shader
+class ShaderProgram
 {
 public:
 
@@ -17,11 +17,11 @@ public:
     // TODO: uniform buffer
 
     // Constructor (pathes relative to SHADER_PATH)
-    Shader(std::string vsFilepath, std::string fsFilepath);
-    Shader(std::string vsFilepath, std::string gsFilepath, std::string fsFilepath);
+    ShaderProgram(std::string vsFilepath, std::string fsFilepath);
+    ShaderProgram(std::string vsFilepath, std::string gsFilepath, std::string fsFilepath);
 
     // Destructor
-    virtual ~Shader();
+    virtual ~ShaderProgram();
 
     // Compile
     void compile();
@@ -40,7 +40,7 @@ public:
 
 protected:
 
-    std::string readShaderFile(std::string filepath, const std::vector<std::string>& rDefines) const;
+    std::string readShaderFile(std::string filepath, const std::set<std::string>& rDefines) const;
 
     void logShaderInfo(GLuint shaderHandle) const;
 
@@ -52,4 +52,4 @@ protected:
     std::string mFragmentShaderFilepath;
 };
 
-#endif // SHADER_H_
+#endif // SHADER_PROGRAM_H_
