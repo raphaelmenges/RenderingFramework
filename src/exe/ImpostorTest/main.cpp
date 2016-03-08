@@ -16,12 +16,14 @@
 // #########################################
 // C = Toggle RENDER_SPHERE
 // I = Toggle TRIANGLE_IMPOSTOR
+// D = Toggle DISPLACE_BY_COLOR
 // #########################################
 
 // Definitions
 const int resolution = 12;
 const std::string RENDER_SPHERE = "RENDER_SPHERE";
 const std::string TRIANGLE_IMPOSTOR = "TRIANGLE_IMPOSTOR";
+const std::string DISPLACE_BY_COLOR = "DISPLACE_BY_COLOR";
 
 // Global variables
 OrbitCamera camera(glm::vec3(0, 0, 0), 90.f, 90.f, 5.0f, 1.0f, 20.0f);
@@ -108,6 +110,20 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
         else
         {
             shaderProgram.addDefine(TRIANGLE_IMPOSTOR);
+        }
+        recompileShaderProgram = true;
+    }
+
+    // Displace by color
+    if(key == GLFW_KEY_D && action == GLFW_PRESS)
+    {
+        if(shaderProgram.findDefine(DISPLACE_BY_COLOR))
+        {
+            shaderProgram.removeDefine(DISPLACE_BY_COLOR);
+        }
+        else
+        {
+            shaderProgram.addDefine(DISPLACE_BY_COLOR);
         }
         recompileShaderProgram = true;
     }

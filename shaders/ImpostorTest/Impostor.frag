@@ -5,6 +5,7 @@
 in vec2 uv;
 flat in float radius;
 flat in vec3 position;
+flat in vec3 color;
 out vec4 outColor;
 layout (depth_less) out float gl_FragDepth; // Makes optimizations possible
 
@@ -54,17 +55,17 @@ void main()
         vec3 surfaceToCamera = normalize(cameraWorldPos - worldPos);
         float cosAngle = max(0.0, dot(surfaceToCamera, reflectionVector));
         float specular = pow(cosAngle, 25);
-        lighting += lighting * 0.75 * specular;
+        lighting += lighting * specular;
 
         // Some "ambient" lighting
-        vec3 color = mix(vec3(0.1, 0.2, 0.3), vec3(0.8, 0.8, 0.8), lighting);
+        vec3 finalColor = color * mix(vec3(0.4, 0.45, 0.5), vec3(1.0, 1.0, 1.0), lighting);
 
         // Output color
-        outColor = vec4(color, 1);
+        outColor = vec4(finalColor, 1);
 
     #else
 
-        outColor = vec4(1,0,0,1);
+        outColor = vec4(color,1);
         gl_FragDepth = gl_FragCoord.z;
 
     #endif

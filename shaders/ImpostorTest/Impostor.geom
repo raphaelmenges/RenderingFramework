@@ -3,14 +3,22 @@
 #defines
 
 layout(points) in;
+
 #ifdef TRIANGLE_IMPOSTOR
+
     layout(triangle_strip, max_vertices = 3) out;
+
 #else
+
     layout(triangle_strip, max_vertices = 4) out;
+
 #endif
+
+in vec3 vertColor[1];
 out vec2 uv;
 flat out float radius;
 flat out vec3 position;
+flat out vec3 color;
 
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
@@ -19,9 +27,10 @@ const float size = 0.175;
 
 void main()
 {
-    // Set radius and position which is for all vertices the same
+    // Set radius, position and color which is for all vertices the same
     radius = size;
     position = gl_in[0].gl_Position.xyz;
+    color = vertColor[0];
 
     // GLSL is column-major! Get world space camera vectors
     vec3 cameraRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]); // First row of view matrix
