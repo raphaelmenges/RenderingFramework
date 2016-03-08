@@ -60,6 +60,15 @@ message(STATUS gl3w)
 include_directories(${EXTERNALS_PATH}/gl3w/include)
 file(GLOB GL3W ${EXTERNALS_PATH}/gl3w/src/*.c)
 
+# ImGui
+message(STATUS ImGui)
+set(IM_GUI_DIR ${EXTERNALS_PATH}/imgui)
+file(GLOB IM_GUI
+    ${IM_GUI_DIR}/imgui.cpp
+    ${IM_GUI_DIR}/imgui_draw.cpp
+    ${IM_GUI_DIR}/examples/opengl3_example/imgui_impl_glfw_gl3.cpp)
+include_directories(${IM_GUI_DIR})
+
 # OpenGL (should be found by CMake)
 message(STATUS OpenGL)
 find_package(OpenGL REQUIRED)
