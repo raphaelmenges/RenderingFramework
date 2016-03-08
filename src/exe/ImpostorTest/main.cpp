@@ -8,6 +8,8 @@
 #include "externals/gl3w/include/GL/gl3w.h"
 #include "externals/glfw/include/GLFW/glfw3.h"
 #include "externals/glm/glm/glm.hpp"
+#include "externals/imgui/imgui.h"
+#include "externals/imgui/examples/opengl3_example/imgui_impl_glfw_gl3.h"
 
 // #########################################
 // ##############SHORTCUTS##################
@@ -30,6 +32,13 @@ ShaderProgram shaderProgram("ImpostorTest/Impostor.vert", "ImpostorTest/Impostor
 // GLFW callback for cursor
 static void cursorCallback(GLFWwindow* pWindow, GLdouble xpos, GLdouble ypos)
 {
+    // Check whether ImGui is handling this
+    ImGuiIO& io = ImGui::GetIO();
+    if(io.WantCaptureMouse)
+    {
+        return;
+    }
+
     cursorX = (GLfloat)xpos;
     cursorY = (GLfloat)ypos;
 }
@@ -37,6 +46,13 @@ static void cursorCallback(GLFWwindow* pWindow, GLdouble xpos, GLdouble ypos)
 // GLFW callback for mouse buttons
 static void buttonsCallback(GLFWwindow* pWindow, GLint button, GLint action, GLint mods)
 {
+    // Check whether ImGui is handling this
+    ImGuiIO& io = ImGui::GetIO();
+    if(io.WantCaptureMouse)
+    {
+        return;
+    }
+
     if (button == GLFW_MOUSE_BUTTON_1)
     {
         if (action == GLFW_PRESS)
@@ -59,6 +75,13 @@ static void scrollCallback(GLFWwindow* pWindow, double xoffset, double yoffset)
 // GLFW callback for keyboard
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    // Check whether ImGui is handling this
+    ImGuiIO& io = ImGui::GetIO();
+    if(io.WantCaptureKeyboard)
+    {
+        return;
+    }
+
     bool recompileShaderProgram = false;
 
     // Display primitive itself or sphere
@@ -110,7 +133,12 @@ int main()
     glfwMakeContextCurrent(pWindow);
     gl3wInit();
 
-    // Callbacks
+    // Init ImGui
+    ImGui_ImplGlfwGL3_Init(pWindow, true);
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontDefault();
+
+    // Set callbacks after ImGui
     glfwSetCursorPosCallback(pWindow, cursorCallback);
     glfwSetMouseButtonCallback(pWindow, buttonsCallback);
     glfwSetScrollCallback(pWindow, scrollCallback);
@@ -152,6 +180,9 @@ int main()
         // Clearing of buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // ImGui new frame
+        ImGui_ImplGlfwGL3_NewFrame();
+
         // Calculate cursor movement
         GLfloat cursorDeltaX = cursorX - prevCursorX;
         GLfloat cursorDeltaY = cursorY - prevCursorY;
@@ -177,6 +208,13 @@ int main()
 
         // Draw cube
         glDrawArrays(GL_POINTS, 0, (GLsizei)glm::pow(resolution,3));
+
+        // ImGui
+        bool opened = true;
+        ImGui::Begin("Properties", &opened, ImVec2(300, 100));
+        ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
+        ImGui::Render();
 
         // Swap front and back buffers and poll events
         glfwSwapBuffers(pWindow);

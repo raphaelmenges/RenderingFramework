@@ -79,7 +79,7 @@ set(UTIL_PATH ${CMAKE_SOURCE_DIR}/src/util)
 file(GLOB_RECURSE UTIL ${UTIL_PATH}/*.h ${UTIL_PATH}/*.cpp)
 
 ### GLOBAL CODE ###
-set(GLOBAL_CODE ${UTIL} ${GL3W})
+set(GLOBAL_CODE ${UTIL} ${GL3W} ${IM_GUI})
 
 # Add shaders as subdirectory to display them in IDE
 add_subdirectory(${SHADERS_PATH})
