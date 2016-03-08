@@ -4,8 +4,12 @@
 * Logger
 * ShaderProgram
   * uniform is no more active after recompilation
+* Think about more framework like framework
+  * Superclass with init and update method
+  * GUI and Loop is owned by superclass
+* Assim integration
 
-##TODO (thesis topic)
+##TODO (thesis topics)
 * Use more centered triangles
 * Compare triangles and quads in terms of performance
 * Techniques
