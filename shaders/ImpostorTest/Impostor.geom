@@ -3,7 +3,11 @@
 #defines
 
 layout(points) in;
-layout(triangle_strip, max_vertices = 3) out;
+#ifdef TRIANGLE_IMPOSTOR
+    layout(triangle_strip, max_vertices = 3) out;
+#else
+    layout(triangle_strip, max_vertices = 4) out;
+#endif
 out vec2 uv;
 flat out float radius;
 flat out vec3 position;
@@ -23,17 +27,44 @@ void main()
     vec3 cameraRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]); // First row of view matrix
     vec3 cameraUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]); // Second row of view matrix
 
-    gl_Position = projMatrix * viewMatrix * (gl_in[0].gl_Position + size * vec4(-2 * cameraRight - cameraUp, 0));
-    uv = 2 * (vec2(-0.5, 0) - 0.5);
-    EmitVertex();
+    // Combine matrices
+    mat4 M = projMatrix * viewMatrix;
 
-    gl_Position = projMatrix * viewMatrix * (gl_in[0].gl_Position + size * vec4(2 * cameraRight - cameraUp, 0));
-    uv = 2 * (vec2(1.5, 0) - 0.5);
-    EmitVertex();
+    #ifdef TRIANGLE_IMPOSTOR
 
-    gl_Position = projMatrix * viewMatrix * (gl_in[0].gl_Position + size * vec4(3 * cameraUp, 0));
-    uv = 2 * (vec2(0.5, 2) - 0.5);
-    EmitVertex();
+        gl_Position = M * (gl_in[0].gl_Position + size * vec4(-2 * cameraRight - cameraUp, 0));
+        uv = 2 * (vec2(-0.5, 0) - 0.5);
+        EmitVertex();
 
-    EndPrimitive();
+        gl_Position =  M * (gl_in[0].gl_Position + size * vec4(2 * cameraRight - cameraUp, 0));
+        uv = 2 * (vec2(1.5, 0) - 0.5);
+        EmitVertex();
+
+        gl_Position = M * (gl_in[0].gl_Position + size * vec4(3 * cameraUp, 0));
+        uv = 2 * (vec2(0.5, 2) - 0.5);
+        EmitVertex();
+
+        EndPrimitive();
+
+    #else
+
+        gl_Position = M * (gl_in[0].gl_Position + size * vec4(cameraRight+cameraUp, 0));
+        uv = vec2(1,1);
+        EmitVertex();
+
+        gl_Position = M * (gl_in[0].gl_Position + size * vec4(-cameraRight+cameraUp, 0));
+        uv = vec2(-1,1);
+        EmitVertex();
+
+        gl_Position = M * (gl_in[0].gl_Position + size * vec4(cameraRight-cameraUp, 0));
+        uv = vec2(1,-1);
+        EmitVertex();
+
+        gl_Position = M * (gl_in[0].gl_Position + size * vec4(-cameraRight-cameraUp, 0));
+        uv = vec2(-1,-1);
+        EmitVertex();
+
+        EndPrimitive();
+
+    #endif
 }

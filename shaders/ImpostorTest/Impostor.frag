@@ -16,12 +16,7 @@ const vec4 lightDirection = vec4(-0.5, -0.75, -0.3, 0);
 
 void main()
 {
-    #ifndef RENDER_SPHERE
-
-        outColor = vec4(1,0,0,1);
-        gl_FragDepth = gl_FragCoord.z;
-
-    #else
+    #ifdef RENDER_SPHERE
 
         // Radius in UV space is 1 (therefore the scaling with 2 in geometry shader)
 
@@ -66,6 +61,11 @@ void main()
 
         // Output color
         outColor = vec4(color, 1);
+
+    #else
+
+        outColor = vec4(1,0,0,1);
+        gl_FragDepth = gl_FragCoord.z;
 
     #endif
 }

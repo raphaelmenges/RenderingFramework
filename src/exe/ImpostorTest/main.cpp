@@ -13,11 +13,13 @@
 // ##############SHORTCUTS##################
 // #########################################
 // C = Toggle RENDER_SPHERE
+// I = Toggle TRIANGLE_IMPOSTOR
 // #########################################
 
 // Definitions
 const int resolution = 12;
 const std::string RENDER_SPHERE = "RENDER_SPHERE";
+const std::string TRIANGLE_IMPOSTOR = "TRIANGLE_IMPOSTOR";
 
 // Global variables
 OrbitCamera camera(glm::vec3(0, 0, 0), 90.f, 90.f, 5.0f, 1.0f, 20.0f);
@@ -69,6 +71,20 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
         else
         {
             shaderProgram.addDefine(RENDER_SPHERE);
+        }
+        recompileShaderProgram = true;
+    }
+
+    // Change impostor geometry
+    if(key == GLFW_KEY_I && action == GLFW_PRESS)
+    {
+        if(shaderProgram.findDefine(TRIANGLE_IMPOSTOR))
+        {
+            shaderProgram.removeDefine(TRIANGLE_IMPOSTOR);
+        }
+        else
+        {
+            shaderProgram.addDefine(TRIANGLE_IMPOSTOR);
         }
         recompileShaderProgram = true;
     }
