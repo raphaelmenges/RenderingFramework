@@ -23,14 +23,23 @@ public:
     // Destructor
     virtual ~ShaderProgram();
 
-    // Compile
-    void compile();
+    // Compile (if already compiled, rebind is necessary! Handle may change)
+    void compile(bool bind = true);
 
     // Bind (MUST BE CALLED BEFORE UPDATING UNIFORMS!!!)
     void bind() const;
 
     // Getter for program handle
     GLuint getProgram() const;
+
+    // Add define
+    void addDefine(std::string define);
+
+    // Remove define
+    void removeDefine(std::string define);
+
+    // Find define
+    bool findDefine(std::string define) const;
 
     // Update uniform
     void updateUniform(std::string name, const float& rValue) const;
@@ -40,16 +49,25 @@ public:
 
 protected:
 
-    std::string readShaderFile(std::string filepath, const std::set<std::string>& rDefines) const;
+    // Struct for shader (no OpenGL handle, since only locally compiled)
+    struct Shader
+    {
+        std::string filepath; // if empty, shader is not used
+    };
+
+    std::string readShaderFile(std::string filepath) const;
+
+    GLuint compileShader(const std::string& rData, GLenum shaderType) const;
 
     void logShaderInfo(GLuint shaderHandle) const;
 
     // Members
     bool mProgramLinked;
     GLuint mProgram;
-    std::string mVertexShaderFilepath;
-    std::string mGeometryShaderFilepath;
-    std::string mFragmentShaderFilepath;
+    Shader mVertexShader;
+    Shader mGeometryShader;
+    Shader mFragmentShader;
+    std::set<std::string> mDefines;
 };
 
 #endif // SHADER_PROGRAM_H_

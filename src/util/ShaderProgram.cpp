@@ -19,9 +19,9 @@ ShaderProgram::ShaderProgram(std::string vsFilepath, std::string fsFilepath) : S
 
 ShaderProgram::ShaderProgram(std::string vsFilepath, std::string gsFilepath, std::string fsFilepath)
 {
-    mVertexShaderFilepath = vsFilepath;
-    mGeometryShaderFilepath = gsFilepath;
-    mFragmentShaderFilepath = fsFilepath;
+    mVertexShader.filepath = vsFilepath;
+    mGeometryShader.filepath = gsFilepath;
+    mFragmentShader.filepath = fsFilepath;
     mProgramLinked = false;
 }
 
@@ -34,47 +34,23 @@ ShaderProgram::~ShaderProgram()
     }
 }
 
-void ShaderProgram::compile()
+void ShaderProgram::compile(bool bind)
 {
-    // Create defines (TODO: should be filled somehow)
-    std::set<std::string> vertexDefines;
-    std::set<std::string> geometryDefines;
-    std::set<std::string> fragmentDefines;
-
     // Vertex shader
-    std::string vertexData = readShaderFile(mVertexShaderFilepath, vertexDefines);
-    std::vector<char> vertexBuffer(vertexData.size() + 1);
-    copy(vertexData.begin(), vertexData.end(), vertexBuffer.begin());
-    const char* vertexShaderSource = &vertexBuffer[0];
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    logShaderInfo(vertexShader);
+    std::string vertexData = readShaderFile(mVertexShader.filepath);
+    GLuint vertexShader = compileShader(vertexData, GL_VERTEX_SHADER);
 
     // Geometry shader
     GLuint geometryShader = 0;
-    if (!mGeometryShaderFilepath.empty())
+    if (!mGeometryShader.filepath.empty())
     {
-        std::string geometryData = readShaderFile(mGeometryShaderFilepath, geometryDefines);
-        std::vector<char> geometryBuffer(geometryData.size() + 1);
-        copy(geometryData.begin(), geometryData.end(), geometryBuffer.begin());
-        const char* geometryShaderSource = &geometryBuffer[0];
-
-        geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
-        glShaderSource(geometryShader, 1, &geometryShaderSource, NULL);
-        glCompileShader(geometryShader);
-        logShaderInfo(geometryShader);
+        std::string geometryData = readShaderFile(mGeometryShader.filepath);
+        geometryShader = compileShader(geometryData, GL_GEOMETRY_SHADER);
     }
 
     // Fragment shader
-    std::string fragmentData = readShaderFile(mFragmentShaderFilepath, fragmentDefines);
-    std::vector<char> fragmentBuffer(fragmentData.size() + 1);
-    copy(fragmentData.begin(), fragmentData.end(), fragmentBuffer.begin());
-    const char* fragmentShaderSource = &fragmentBuffer[0];
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    logShaderInfo(fragmentShader);
+    std::string fragmentData = readShaderFile(mFragmentShader.filepath);
+    GLuint fragmentShader = compileShader(fragmentData, GL_FRAGMENT_SHADER);
 
     // Delete old program if there exists one
     if (mProgramLinked)
@@ -86,7 +62,7 @@ void ShaderProgram::compile()
     // Create program
     mProgram = glCreateProgram();
     glAttachShader(mProgram, vertexShader);
-    if (!mGeometryShaderFilepath.empty())
+    if (!mGeometryShader.filepath.empty())
     {
         glAttachShader(mProgram, geometryShader);
     }
@@ -95,7 +71,7 @@ void ShaderProgram::compile()
 
     // Delete shaders
     glDeleteShader(vertexShader);
-    if (!mGeometryShaderFilepath.empty())
+    if (!mGeometryShader.filepath.empty())
     {
         glDeleteShader(geometryShader);
     }
@@ -103,6 +79,12 @@ void ShaderProgram::compile()
 
     // Remember, that program was linked
     mProgramLinked = true;
+
+    // Bind if wished
+    if(bind)
+    {
+        this->bind();
+    }
 }
 
 void ShaderProgram::bind() const
@@ -113,6 +95,21 @@ void ShaderProgram::bind() const
 GLuint ShaderProgram::getProgram() const
 {
     return mProgram;
+}
+
+void ShaderProgram::addDefine(std::string define)
+{
+    mDefines.insert(define);
+}
+
+void ShaderProgram::removeDefine(std::string define)
+{
+    mDefines.erase(define);
+}
+
+bool ShaderProgram::findDefine(std::string define) const
+{
+    return mDefines.find(define) != mDefines.end();
 }
 
 void ShaderProgram::updateUniform(std::string name, const float& rValue) const
@@ -140,7 +137,7 @@ void ShaderProgram::updateUniform(std::string name, const glm::mat4& rValue) con
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(rValue));
 }
 
-std::string ShaderProgram::readShaderFile(std::string filepath, const std::set<std::string>& rDefines) const
+std::string ShaderProgram::readShaderFile(std::string filepath) const
 {
     // Create full path
     std::string fullpath = std::string(SHADERS_PATH) + "/" + filepath;
@@ -161,19 +158,19 @@ std::string ShaderProgram::readShaderFile(std::string filepath, const std::set<s
     std:: stringstream ss(data);
     std::string line;
     std::string dataWithDefines;
-    bool check = rDefines.empty(); // True when empty, otherwise false
+    bool check = mDefines.empty(); // True when empty, otherwise false
 
     while (getline(ss, line, '\n'))
     {
         if (line.compare(DEFINES_PHRASE) == 0)
         {
             // Add defines instead of DEFINES_PHRASE
-            for (std::string define : rDefines)
+            for (std::string define : mDefines)
             {
-                dataWithDefines += define + "\n";
+                dataWithDefines += "#define " + define + "\n";
             }
 
-            // Set check to true because DEFINES_PHRASE was found replaced
+            // Set check to true because DEFINES_PHRASE was found and replaced
             check = true;
         }
         else
@@ -184,9 +181,25 @@ std::string ShaderProgram::readShaderFile(std::string filepath, const std::set<s
     }
 
     // TODO: log something when check is false
+    if(!check)
+    {
+        std::cout << "Define phrase was not found." << filepath << std::endl;
+    }
 
     // Return content of shader file including defines
     return dataWithDefines;
+}
+
+GLuint ShaderProgram::compileShader(const std::string& rData, GLenum shaderType) const
+{
+    std::vector<char> buffer(rData.size() + 1);
+    copy(rData.begin(), rData.end(), buffer.begin());
+    const char* source = &buffer[0];
+    GLuint shaderHandle = glCreateShader(shaderType);
+    glShaderSource(shaderHandle, 1, &source, NULL);
+    glCompileShader(shaderHandle);
+    logShaderInfo(shaderHandle);
+    return shaderHandle;
 }
 
 void ShaderProgram::logShaderInfo(GLuint shaderHandle) const

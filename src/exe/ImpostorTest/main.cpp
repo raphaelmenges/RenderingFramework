@@ -11,11 +11,13 @@
 
 // Definitions
 const int resolution = 12;
+const std::string RENDER_SPHERE = "RENDER_SPHERE";
 
 // Global variables
 OrbitCamera camera(glm::vec3(0, 0, 0), 90.f, 90.f, 5.0f, 1.0f, 20.0f);
 GLboolean buttonPressed = GL_FALSE;
 GLfloat cursorX, cursorY, prevCursorX, prevCursorY = 0;
+ShaderProgram shaderProgram("ImpostorTest/Impostor.vert", "ImpostorTest/Impostor.geom", "ImpostorTest/Impostor.frag");
 
 // GLFW callback for cursor
 static void cursorCallback(GLFWwindow* pWindow, GLdouble xpos, GLdouble ypos)
@@ -46,6 +48,33 @@ static void scrollCallback(GLFWwindow* pWindow, double xoffset, double yoffset)
     camera.setRadius(camera.getRadius() - 0.1f * (float)yoffset);
 }
 
+// GLFW callback for keyboard
+static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    bool recompileShaderProgram = false;
+
+    // Display primitive itself or sphere
+    if(key == GLFW_KEY_C && action == GLFW_PRESS)
+    {
+
+        if(shaderProgram.findDefine(RENDER_SPHERE))
+        {
+            shaderProgram.removeDefine(RENDER_SPHERE);
+        }
+        else
+        {
+            shaderProgram.addDefine(RENDER_SPHERE);
+        }
+        recompileShaderProgram = true;
+    }
+
+    // Recompile shader program if necessary
+    if(recompileShaderProgram)
+    {
+        shaderProgram.compile();
+    }
+}
+
 int main()
 {
     // Window and OpenGL initialization
@@ -64,6 +93,7 @@ int main()
     glfwSetCursorPosCallback(pWindow, cursorCallback);
     glfwSetMouseButtonCallback(pWindow, buttonsCallback);
     glfwSetScrollCallback(pWindow, scrollCallback);
+    glfwSetKeyCallback(pWindow, keyCallback);
 
     // Prepare OpenGL
     glEnable(GL_DEPTH_TEST);
@@ -81,12 +111,10 @@ int main()
     // Prepare projection
     glm::mat4 projection = glm::perspective(glm::radians(45.f), (GLfloat)width / (GLfloat)height, 0.01f, 100.f);
 
-    // Prepare shader
-    ShaderProgram shader("ImpostorTest/Impostor.vert", "ImpostorTest/Impostor.geom", "ImpostorTest/Impostor.frag");
-    shader.compile();
-    shader.bind();
-    shader.updateUniform("resolution", resolution);
-    shader.updateUniform("projMatrix", projection);
+    // Prepare shader program
+    shaderProgram.compile();
+    shaderProgram.updateUniform("resolution", resolution);
+    shaderProgram.updateUniform("projMatrix", projection);
 
     // Prepare vertex array object (even if empty, it seams necessary)
     GLuint VAO = 0; // handle of VAO
@@ -118,9 +146,9 @@ int main()
         }
         camera.update();
 
-        // Update shader (should be bound)
-        shader.updateUniform("viewMatrix", camera.getViewMatrix());
-        shader.updateUniform("cameraWorldPos", camera.getPosition());
+        // Update shader program (should be bound)
+        shaderProgram.updateUniform("viewMatrix", camera.getViewMatrix());
+        shaderProgram.updateUniform("cameraWorldPos", camera.getPosition());
 
         // Draw cube
         glDrawArrays(GL_POINTS, 0, (GLsizei)glm::pow(resolution,3));

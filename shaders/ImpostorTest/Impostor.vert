@@ -1,5 +1,7 @@
 #version 450 core
 
+#defines
+
 uniform int resolution;
 
 const float size = 0.25;
