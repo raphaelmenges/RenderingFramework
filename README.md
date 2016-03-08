@@ -2,6 +2,8 @@
 * Coordinate system gizmo
 * Visual Studio: correct filtering of shaders folder content
 * Logger
+* ShaderProgram
+  * uniform is no more active after recompilation
 
 ##TODO (thesis topic)
 * Use more centered triangles

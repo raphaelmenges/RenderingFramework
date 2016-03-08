@@ -9,6 +9,12 @@
 #include "externals/glfw/include/GLFW/glfw3.h"
 #include "externals/glm/glm/glm.hpp"
 
+// #########################################
+// ##############SHORTCUTS##################
+// #########################################
+// C = Toggle RENDER_SPHERE
+// #########################################
+
 // Definitions
 const int resolution = 12;
 const std::string RENDER_SPHERE = "RENDER_SPHERE";
@@ -56,7 +62,6 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
     // Display primitive itself or sphere
     if(key == GLFW_KEY_C && action == GLFW_PRESS)
     {
-
         if(shaderProgram.findDefine(RENDER_SPHERE))
         {
             shaderProgram.removeDefine(RENDER_SPHERE);
@@ -112,9 +117,8 @@ int main()
     glm::mat4 projection = glm::perspective(glm::radians(45.f), (GLfloat)width / (GLfloat)height, 0.01f, 100.f);
 
     // Prepare shader program
+    shaderProgram.addDefine(RENDER_SPHERE);
     shaderProgram.compile();
-    shaderProgram.updateUniform("resolution", resolution);
-    shaderProgram.updateUniform("projMatrix", projection);
 
     // Prepare vertex array object (even if empty, it seams necessary)
     GLuint VAO = 0; // handle of VAO
@@ -149,6 +153,11 @@ int main()
         // Update shader program (should be bound)
         shaderProgram.updateUniform("viewMatrix", camera.getViewMatrix());
         shaderProgram.updateUniform("cameraWorldPos", camera.getPosition());
+
+        // Those values are static but must be updated each frame because a
+        // recompilation of the shader program leads to loss of uniform data (BUG)
+        shaderProgram.updateUniform("resolution", resolution);
+        shaderProgram.updateUniform("projMatrix", projection);
 
         // Draw cube
         glDrawArrays(GL_POINTS, 0, (GLsizei)glm::pow(resolution,3));
