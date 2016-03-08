@@ -25,7 +25,6 @@ void main()
     position -= resolution / 2;
     position *= size;
 
-
     // Color
     vertColor = fract(vec3(
             position.x * 1.2 + position.y * 0.3 + position.z * 0.3,
